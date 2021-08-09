@@ -26,7 +26,7 @@ class UserAuth extends Controller
             $objUser->save();
             return response()->json([
                 "status"=>"success",
-                "user"=>$objUser
+                "result"=>$objUser
             ],200);
             
         }else{
@@ -46,6 +46,7 @@ class UserAuth extends Controller
             $user->save();
             return response()->json([
                 "status"=>"success",
+                "result"=>$user,
                 "token"=>$user->remember_token
             ],200);
         }

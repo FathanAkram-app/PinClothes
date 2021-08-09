@@ -19,5 +19,6 @@ Route::post('/addpost', 'App\Http\Controllers\PostController@addPost');
 Route::post('/addcomment', 'App\Http\Controllers\PostController@addComment');
 Route::get('/getcomments', 'App\Http\Controllers\PostController@getComments');
 Route::get('/getposts', 'App\Http\Controllers\PostController@getPosts');
+Route::post('/deletepost', 'App\Http\Controllers\PostController@deletePost');
 
 

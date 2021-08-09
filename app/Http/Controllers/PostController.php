@@ -19,7 +19,7 @@ class PostController extends Controller
 
         return response()->json([
             "status"=>"success",
-            "comments"=>$posts
+            "result"=>$posts
         ],200);
     }
 
@@ -29,7 +29,7 @@ class PostController extends Controller
 
         return response()->json([
             "status"=>"success",
-            "comments"=>$comments
+            "result"=>$comments
         ],200);
     }
     
@@ -61,7 +61,7 @@ class PostController extends Controller
                     ->where('attractions_id',$objAttractionsPosts->attractions_id)
                     ->first();
                 if ($findAttractionsPosts==null) {
-                    $objAttractionsPosts->post_id = $user->id;
+                    $objAttractionsPosts->post_id = $post->id;
                     $objAttractionsPosts->save();
                 }
                 
@@ -99,6 +99,29 @@ class PostController extends Controller
         return response()->json([
             "status"=>"failed",
             "message"=>"Please login first"
+        ],200);
+    }
+
+    public function deletePost(Request $request)
+    {
+        $post = Post::where('id',$request->post_id)->first();
+        $user = User::where('remember_token',$request->bearerToken())->first();
+        if ($post->user_id==$user->id) {
+            foreach (AttractionsPosts::where('post_id',$request->post_id)->get() as $post) {
+                $post->delete();
+            } 
+            foreach (Comment::where('post_id',$request->post_id)->get() as $comment) {
+                $comment->delete();
+            }
+            $post->delete();
+            return response()->json([
+                "status"=>"success",
+                "message"=>"deleted successfully"
+            ],200);
+        }
+        return response()->json([
+            "status"=>"failed",
+            "message"=>"this post is not yours"
         ],200);
     }
 }
