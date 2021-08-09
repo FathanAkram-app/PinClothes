@@ -13,3 +13,7 @@ Route::post('/login', 'App\Http\Controllers\UserAuth@login');
 
 // Attraction endpoint
 Route::post('/addattractions', 'App\Http\Controllers\AttractionController@addAttractions');
+
+// Posts endpoint
+Route::post('/addpost', 'App\Http\Controllers\PostController@addPost');
+
