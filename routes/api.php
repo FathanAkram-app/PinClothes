@@ -16,4 +16,8 @@ Route::post('/addattractions', 'App\Http\Controllers\AttractionController@addAtt
 
 // Posts endpoint
 Route::post('/addpost', 'App\Http\Controllers\PostController@addPost');
+Route::post('/addcomment', 'App\Http\Controllers\PostController@addComment');
+Route::get('/getcomments', 'App\Http\Controllers\PostController@getComments');
+Route::get('/getposts', 'App\Http\Controllers\PostController@getPosts');
+
 

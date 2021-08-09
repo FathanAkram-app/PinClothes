@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Attraction;
 use App\Models\User;
+use App\Models\AttractionsUsers;
 use Illuminate\Support\Str;
 
 class AttractionController extends Controller
@@ -12,22 +13,42 @@ class AttractionController extends Controller
     public function addAttractions(Request $request)
     {
 
-        $userId = User::where('remember_token',$request->bearerToken())->first()->id;
-        $objAttractions = array();
-        foreach ($request->attractions as $attraction) {
-            $objAttraction = new Attraction();
-            $objAttraction->attractions = Str::lower($attraction);
-            if (Attraction::where('attractions',$at->attractions)->first() == null) {
-                $objAttraction->save();
+        $user = User::where('remember_token',$request->bearerToken())->first();
+        if ($user) {
+            foreach ($request->attractions as $attraction) {
+                $objAttraction = new Attraction();
+                $objAttractionsUsers = new AttractionsUsers();
+                $objAttraction->attractions = Str::lower($attraction);
+                $findAttraction = Attraction::where('attractions',$objAttraction->attractions)->first();
+                if ($findAttraction) {
+                    $objAttractionsUsers->attractions_id = $findAttraction->id;
+                }else{
+                    $objAttraction->save();
+                    $objAttractionsUsers->attractions_id = $objAttraction->id;
+                    
+                }
+                
+                $findAttractionsUsers = AttractionsUsers::where('users_id',$user->id)
+                    ->where('attractions_id',$objAttractionsUsers->attractions_id)
+                    ->first();
+                if ($findAttractionsUsers==null) {
+                    $objAttractionsUsers->users_id = $user->id;
+                    $objAttractionsUsers->save();
+                }
+                
             }
-            array_push($objAttractions, $at);
+            
+            
+            return response()->json([
+                "status"=>"success"
+            ],200);
         }
-        foreach ($objAttractions as $a) {
-            $a->users()->attach($userId);
-        }
-        
         return response()->json([
-            "status"=>"success"
+            "status"=>"failed",
+            "message"=>"please login first"
         ],200);
+        
     }
+
+    
 }

@@ -45,7 +45,8 @@ class UserAuth extends Controller
             $user->remember_token = Str::random(60);
             $user->save();
             return response()->json([
-                "status"=>"success"
+                "status"=>"success",
+                "token"=>$user->remember_token
             ],200);
         }
         return response()->json([
