@@ -10,6 +10,8 @@ use App\Models\Attraction;
 use App\Models\AttractionsPosts;
 use App\Models\UpvotesDownvotes;
 use Illuminate\Support\Str;
+use Carbon\Carbon;
+use Illuminate\Support\Facades\Storage;
 
 
 class PostController extends Controller
@@ -17,10 +19,17 @@ class PostController extends Controller
     public function getPosts()
     {
         $posts = Post::latest('created_at')->take(5)->get();
-
+        $result = array();
+        
+        foreach ($posts as $post) {
+            $upvotes = UpvotesDownvotes::where('post_id',$post->id)->get();
+            $post->upvotes = $upvotes;
+            $post->img_path = Storage::url($post->img_path);
+            array_push($result,$post);
+        }
         return response()->json([
             "status"=>"success",
-            "result"=>$posts
+            "result"=>$result
         ],200);
     }
 
@@ -40,7 +49,7 @@ class PostController extends Controller
         $user = User::where('remember_token',$request->bearerToken())->first();
         if ($user) {
             $post = new Post();
-            $img = $request->img->store('images');
+            $img = $request->img->storeAs('public',Carbon::now()->timestamp.'.jpg');
             $post->img_path = $img;
             $post->caption = $request->caption;
             $post->user_id = $user->id;
