@@ -15,10 +15,14 @@ Route::post('/login', 'App\Http\Controllers\UserAuth@login');
 Route::post('/addattractions', 'App\Http\Controllers\AttractionController@addAttractions');
 
 // Posts endpoint
-Route::post('/addpost', 'App\Http\Controllers\PostController@addPost');
-Route::post('/addcomment', 'App\Http\Controllers\PostController@addComment');
 Route::get('/getcomments', 'App\Http\Controllers\PostController@getComments');
 Route::get('/getposts', 'App\Http\Controllers\PostController@getPosts');
+Route::post('/addpost', 'App\Http\Controllers\PostController@addPost');
+Route::post('/addcomment', 'App\Http\Controllers\PostController@addComment');
 Route::post('/deletepost', 'App\Http\Controllers\PostController@deletePost');
+Route::post('/setupvoteownvote', 'App\Http\Controllers\PostController@setUpvotesDownvotes');
+Route::post('/unvote', 'App\Http\Controllers\PostController@unvote');
+
+
 
 

@@ -8,6 +8,7 @@ use App\Models\Post;
 use App\Models\Comment;
 use App\Models\Attraction;
 use App\Models\AttractionsPosts;
+use App\Models\UpvotesDownvotes;
 use Illuminate\Support\Str;
 
 
@@ -123,5 +124,55 @@ class PostController extends Controller
             "status"=>"failed",
             "message"=>"this post is not yours"
         ],200);
+    }
+
+    public function setUpvotesDownvotes(Request $request)
+    {
+        $post = Post::where('id',$request->post_id)->first();
+        $user = User::where('remember_token', $request->bearerToken())->first();
+        if ($user && $post) {
+            $findUD = UpvotesDownvotes::where('post_id',$request->post_id)->where('user_id',$user->id)->first();
+            if ($findUD) {
+                $findUD->update(['upvoted' => $request->upvotes]);
+            }else{
+                $ud = new UpvotesDownvotes();
+                $ud->upvoted = $request->upvotes;
+                $ud->user_id = $user->id;
+                $ud->post_id = $post->id;
+                $ud->save();
+            }
+            return response()->json([
+                "status"=>"success"
+            ],200);
+        }
+        return response()->json([
+            "status"=>"failed",
+            "message"=>"please login first / post not found"
+        ],200);
+    }
+
+    public function unvote(Request $request)
+    {
+        $post = Post::where('id',$request->post_id)->first();
+        $user = User::where('remember_token',$request->bearerToken())->first();
+        if ($user && $post) {
+            $findUD = UpvotesDownvotes::where('post_id',$request->post_id)->where('user_id',$user->id)->first();
+            if ($findUD) {
+                $findUD->delete();
+                return response()->json([
+                    "status"=>"success"
+                ],200);
+            }
+            return response()->json([
+                "status"=>"failed",
+                "message"=>"you already unvoted this post"
+            ],200);
+
+        }
+        return response()->json([
+            "status"=>"failed",
+            "message"=>"please login first / post not found"
+        ],200);
+        
     }
 }
