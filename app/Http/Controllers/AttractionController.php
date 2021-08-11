@@ -40,13 +40,14 @@ class AttractionController extends Controller
             
             
             return response()->json([
-                "status"=>"success"
+                "status"=>200,
+                "message"=>"success"
             ],200);
         }
         return response()->json([
-            "status"=>"failed",
+            "status"=>401,
             "message"=>"please login first"
-        ],200);
+        ],401);
         
     }
 

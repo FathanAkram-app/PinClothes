@@ -8,7 +8,7 @@
         "php": "^7.2|^8.0",
         "fideloper/proxy": "^4.4",
         "fruitcake/laravel-cors": "^2.0",
-        "guzzlehttp/guzzle": "^7.0.1",
+        "guzzlehttp/guzzle": "^7.3",
         "illuminate/database": "^8.53",
         "laravel/framework": "^8.40",
         "laravel/tinker": "^2.5"

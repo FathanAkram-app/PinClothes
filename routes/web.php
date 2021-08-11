@@ -1,6 +1,8 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use App\Models\User;
+use Carbon\Carbon;
 
 /*
 |--------------------------------------------------------------------------
@@ -15,4 +17,18 @@ use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
     return view('welcome');
+});
+
+Route::get('/emailverification/{id}', function ($id) {
+    $verify = User::where('id',$id)->first();
+    if ($verify->email_verified_at){
+        return view('failedverif');
+    }else{
+        $verify->email_verified_at = Carbon::now()->timestamp;
+        $verify->save();
+        return view('verification');
+    }   
+    
+    
+    
 });

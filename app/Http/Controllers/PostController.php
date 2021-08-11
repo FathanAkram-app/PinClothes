@@ -28,7 +28,8 @@ class PostController extends Controller
             array_push($result,$post);
         }
         return response()->json([
-            "status"=>"success",
+            "status"=>200,
+            "message"=>"success",
             "result"=>$result
         ],200);
     }
@@ -38,7 +39,8 @@ class PostController extends Controller
         $comments = Comment::where("post_id",$request->post_id)->get();
 
         return response()->json([
-            "status"=>"success",
+            "status"=>200,
+            "message"=>"success",
             "result"=>$comments
         ],200);
     }
@@ -78,13 +80,14 @@ class PostController extends Controller
             }
             
             return response()->json([
-                "status"=>"success"
+                "status"=>200,
+                "message"=>"success"
             ],200);
         }
         return response()->json([
-            "status"=>"failed",
+            "status"=>401,
             "message"=>"Please login first"
-        ],200);
+        ],401);
         
     }
 
@@ -125,14 +128,14 @@ class PostController extends Controller
             }
             $post->delete();
             return response()->json([
-                "status"=>"success",
+                "status"=>200,
                 "message"=>"deleted successfully"
             ],200);
         }
         return response()->json([
-            "status"=>"failed",
+            "status"=>400,
             "message"=>"this post is not yours"
-        ],200);
+        ],400);
     }
 
     public function setUpvotesDownvotes(Request $request)
@@ -151,13 +154,14 @@ class PostController extends Controller
                 $ud->save();
             }
             return response()->json([
-                "status"=>"success"
+                "status"=>200,
+                "message"=>"success"
             ],200);
         }
         return response()->json([
-            "status"=>"failed",
+            "status"=>400,
             "message"=>"please login first / post not found"
-        ],200);
+        ],400);
     }
 
     public function unvote(Request $request)
@@ -169,19 +173,20 @@ class PostController extends Controller
             if ($findUD) {
                 $findUD->delete();
                 return response()->json([
-                    "status"=>"success"
+                    "status"=>200,
+                    "message"=>"success"
                 ],200);
             }
             return response()->json([
-                "status"=>"failed",
+                "status"=>400,
                 "message"=>"you already unvoted this post"
-            ],200);
+            ],400);
 
         }
         return response()->json([
-            "status"=>"failed",
+            "status"=>400,
             "message"=>"please login first / post not found"
-        ],200);
+        ],400);
         
     }
 }
