@@ -18,7 +18,7 @@ class PostController extends Controller
 {
     public function getPosts()
     {
-        $posts = Post::latest('created_at')->take(5)->get();
+        $posts = Post::latest('created_at')->paginate(5);
         $result = array();
         
         foreach ($posts as $post) {

@@ -20,7 +20,7 @@ Route::get('/getposts', 'App\Http\Controllers\PostController@getPosts');
 Route::post('/addpost', 'App\Http\Controllers\PostController@addPost');
 Route::post('/addcomment', 'App\Http\Controllers\PostController@addComment');
 Route::post('/deletepost', 'App\Http\Controllers\PostController@deletePost');
-Route::post('/setupvoteownvote', 'App\Http\Controllers\PostController@setUpvotesDownvotes');
+Route::post('/setupvotedownvote', 'App\Http\Controllers\PostController@setUpvotesDownvotes');
 Route::post('/unvote', 'App\Http\Controllers\PostController@unvote');
 
 
