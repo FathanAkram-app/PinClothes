@@ -27,8 +27,6 @@ Route::get('/emailverification/{id}', function ($id) {
         $verify->email_verified_at = Carbon::now()->timestamp;
         $verify->save();
         return view('verification');
-    }   
-    
-    
+    }
     
 });
