@@ -17,6 +17,7 @@ class CreateUserAttractionTable extends Migration
             $table->id();
             $table->foreignId('attractions_id')->constrained();
             $table->foreignId('users_id')->constrained();
+            $table->integer('attraction_count');
             $table->timestamps();
         });
     }

@@ -33,12 +33,32 @@ class AttractionController extends Controller
                     ->first();
                 if ($findAttractionsUsers==null) {
                     $objAttractionsUsers->users_id = $user->id;
+                    $objAttractionsUsers->attraction_count = 1;
                     $objAttractionsUsers->save();
                 }
                 
             }
             
             
+            return response()->json([
+                "status"=>200,
+                "message"=>"success"
+            ],200);
+        }
+        return response()->json([
+            "status"=>401,
+            "message"=>"please login first"
+        ],401);
+        
+    }
+
+    public function deleteAttraction(Request $request)
+    {
+        $user = User::where('remember_token', $request->bearerToken())->first();
+        if ($user){
+            AttractionsUsers::
+                where('users_id', $user->id)
+                ->where('attractions_id', $request->attraction_id)->first()->delete();
             return response()->json([
                 "status"=>200,
                 "message"=>"success"

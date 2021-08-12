@@ -9,17 +9,49 @@ use App\Models\Comment;
 use App\Models\Attraction;
 use App\Models\AttractionsPosts;
 use App\Models\UpvotesDownvotes;
+use App\Models\AttractionsUsers;
 use Illuminate\Support\Str;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Storage;
 
-
 class PostController extends Controller
 {
-    public function getPosts()
+    public function getPosts(Request $request)
     {
+        $user = User::where('remember_token',$request->bearerToken())->first();
+        if ($request->sort == "recently"){
+            $posts = Post::latest('created_at')->paginate(5);
+        } else if($request->sort == "foryou"&& $request->bearerToken()){
+            $attractions_id = AttractionsUsers::
+                where(
+                    'users_id',
+                    $user->id
+                )
+                ->orderBy('attraction_count','asc')
+                ->get()->pluck('attractions_id');
+            $post_id = AttractionsPosts::distinct('post_id')
+                ->whereIn('attractions_id',$attractions_id)
+                ->get()->pluck('post_id');
+            $posts = Post::whereIn('id', $post_id)->latest('created_at')->paginate(5);
+
+        }else if($request->sort == "trending"){
+            $posts = Post::max('created_at')->paginate(5);
+
+        }else if($request->sort == "mypost"){
+            $posts = Post::where('user_id', $user->id)->get();
+
+        }else if($request->sort == "search"){
+            $attraction = AttractionsPosts::
+                where(
+                    'attractions_id',
+                    Attraction::where("attractions", "LIKE" ,"%{$request->search}%")->get()->pluck('id')
+                )->get()->pluck('post_id');
+            $posts = Post::
+                whereIn('id', $attraction)
+                ->orWhere("caption", "LIKE", "%{$request->search}%")
+                ->paginate(5);
+        }
         
-        $posts = Post::latest('created_at')->paginate(5);
         $result = array();
 
         
@@ -121,7 +153,11 @@ class PostController extends Controller
     {
         $post = Post::where('id',$request->post_id)->first();
         $user = User::where('remember_token',$request->bearerToken())->first();
-        if ($post->user_id==$user->id) {
+        if ($user&&$post->user_id==$user->id) {
+            if (Storage::exists($post->img_path)){
+                Storage::delete($post->img_path);
+            }
+             
             foreach (AttractionsPosts::where('post_id',$request->post_id)->get() as $post) {
                 $post->delete();
             } 
@@ -152,9 +188,41 @@ class PostController extends Controller
                 $ud = new UpvotesDownvotes();
                 $ud->upvoted = $request->upvotes;
                 $ud->user_id = $user->id;
-                $ud->post_id = $post->id;
+                $ud->post_id = $request->post_id;
                 $ud->save();
             }
+
+            $findAP = AttractionsPosts::where('post_id',$post->id)->get();
+            foreach($findAP as $ap){
+                $findAU = AttractionsUsers::
+                    where('attractions_id', $ap->attractions_id)
+                    ->where('users_id',$user->id)
+                    ->first();
+                if ($findAU){
+                    if ($request->upvotes){
+                        $findAU->attraction_count += 1;
+                    }else{
+                        $findAU->attraction_count -= 1;
+                    }
+                    
+                }else{
+                    $findAU = new AttractionsUsers();
+                    $findAU->users_id = $user->id;
+                    $findAU->attractions_id = $ap->attractions_id;
+                    if ($request->upvotes){
+                        $findAU->attraction_count = 2;
+                    }else{
+                        $findAU->attraction_count = 1;
+                    }
+
+                }
+                $findAU->save();
+                
+            }
+            
+            
+            
+            
             return response()->json([
                 "status"=>200,
                 "message"=>"success"
