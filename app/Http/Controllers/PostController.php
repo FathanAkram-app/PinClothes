@@ -21,6 +21,7 @@ class PostController extends Controller
         $posts = Post::latest('created_at')->paginate(5);
         $result = array();
         
+        
         foreach ($posts as $post) {
             $upvotes = UpvotesDownvotes::where('post_id',$post->id)->get();
             $post->upvotes = $upvotes;
