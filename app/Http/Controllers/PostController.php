@@ -41,14 +41,18 @@ class PostController extends Controller
             $posts = Post::where('user_id', $user->id)->get();
 
         }else if($request->sort == "search"){
-            $attraction = AttractionsPosts::
-                where(
+            $inStr = explode(" ",$request->search);
+            $a = Attraction::query();
+            foreach ($inStr as $str){
+                $a->orWhere("attractions", "like" ,"%{$str}%");
+            }
+            $a = $a->distinct()->get()->pluck('id');
+            $post_ids = AttractionsPosts::whereIn(
                     'attractions_id',
-                    Attraction::where("attractions", "LIKE" ,"%{$request->search}%")->get()->pluck('id')
+                    $a
                 )->get()->pluck('post_id');
             $posts = Post::
-                whereIn('id', $attraction)
-                ->orWhere("caption", "LIKE", "%{$request->search}%")
+                whereIn('id', $post_ids)
                 ->paginate(5);
         }
         
